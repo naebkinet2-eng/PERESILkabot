@@ -6,7 +6,7 @@ import threading
 # 1. Вставь свой токен бота в кавычки ниже:
 TOKEN = '8795496069:AAFrxORXRroXihRI8IS8emZXXzX22U4drEM'
 
-CHANNEL_ID = '8125791280'
+CHANNEL_ID = '@morozteam_1'
 
 # Инициализируем бота и веб-сервер
 bot = telebot.TeleBot(TOKEN)
