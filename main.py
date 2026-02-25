@@ -4,11 +4,9 @@ from flask import Flask
 import threading
 
 # 1. Вставь свой токен бота в кавычки ниже:
-TOKEN = 'ТВОЙ_ТОКЕН_СЮДА'
+TOKEN = '8795496069:AAFrxORXRroXihRI8IS8emZXXzX22U4drEM'
 
-# 2. Укажи ID твоего канала или его юзернейм (например, '@my_super_channel')
-# Важно: бот ДОЛЖЕН быть администратором в этом канале с правом публикации!
-CHANNEL_ID = '@ТВОЙ_КАНАЛ_СЮДА'
+CHANNEL_ID = '8125791280'
 
 # Инициализируем бота и веб-сервер
 bot = telebot.TeleBot(TOKEN)
