@@ -7,7 +7,7 @@ import threading
 TOKEN = '8795496069:AAFrxORXRroXihRI8IS8emZXXzX22U4drEM'
 
 # 2. Укажи ID твоего канала или его юзернейм
-CHANNEL_ID = '@morozteam_1'
+CHANNEL_ID = '@SIOTZV123'
 
 bot = telebot.TeleBot(TOKEN)
 app = Flask(__name__)
