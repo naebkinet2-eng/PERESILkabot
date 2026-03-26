@@ -1,43 +1,77 @@
-import telebot
-import os
-from flask import Flask
-import threading
+import asyncio
+from aiogram import Bot, Dispatcher, types, F
+from aiogram.filters import CommandStart
+from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, WebAppInfo
 
-# 1. Вставь свой токен бота
-TOKEN = '8795496069:AAFrxORXRroXihRI8IS8emZXXzX22U4drEM'
+# Твой токен и ссылка на Mini App
+TOKEN = "8768303694:AAFEDa4lOHFHX439A7vcfh2qGltZciQBYXE"
+WEB_APP_URL = "https://ltt.wuaze.com/?i=1"
 
-# 2. Укажи ID твоего канала или его юзернейм
-CHANNEL_ID = '-1003848558309'
+bot = Bot(token=TOKEN)
+dp = Dispatcher()
 
-bot = telebot.TeleBot(TOKEN)
-app = Flask(__name__)
+def get_main_keyboard():
+    # Создаем кнопки как на скриншоте
+    kb = [
+        [
+            # Кнопка Mini App (открывает твой сайт внутри Телеграм)
+            InlineKeyboardButton(
+                text="📲 КУПИТЬ (с vpn)", 
+                web_app=WebAppInfo(url=WEB_APP_URL)
+            )
+        ],
+        [
+            InlineKeyboardButton(text="💼 РАБОТА", callback_data="btn_work"),
+            InlineKeyboardButton(text="💳 ПРОФИЛЬ", callback_data="btn_profile")
+        ],
+        [
+            InlineKeyboardButton(text="ПРАВИЛА", callback_data="btn_rules"),
+            InlineKeyboardButton(text="ИНФОРМАЦИЯ", callback_data="btn_info")
+        ],
+        [
+            InlineKeyboardButton(text="🔔 ОПОВЕЩЕНИЯ", callback_data="btn_notif")
+        ],
+        [
+            InlineKeyboardButton(text="ОПЕРАТОР ↗️", callback_data="btn_operator")
+        ]
+    ]
+    return InlineKeyboardMarkup(inline_keyboard=kb)
 
-# Заглушка для Render
-@app.route('/')
-def health_check():
-    return "Bot is running and healthy!"
+@dp.message(CommandStart())
+async def cmd_start(message: types.Message):
+    # Текст сообщения в точности как на скрине
+    welcome_text = (
+        "Добро пожаловать в магазин ❤️ Love Store!\n\n"
+        "🐱 Наш магазин представлен на популярных площадках, таких как "
+        "Kr**en, Me*a, Bla*kSp*ut и проверен более чем 10.000 заказами наших довольных клиентов\n\n"
+        "Работаем в большинстве городов РФ\n"
+        "Наш оператор доступен для вас 24/7, в случае возникновения вопросов "
+        "или спорных ситуаций мы ответим вам в течение 30 минут!\n\n"
+        "💼 У нас открыты вакансии, требуются:\n"
+        "Курьеры, водители меж-город, трафаретчики во всех городах!\n"
+        "За подробностями обращайтесь к оператору 👇\n"
+        "❄️ Платим дох*я! ❄️\n\n"
+        "🐱 АКТУАЛЬНЫЕ КОНТАКТЫ\n"
+        "Оператор тг: @OperatorLoveStore\n"
+        "Бот-оповещатель: t.me/LoveStoreOpoBot\n"
+        "Канал информации: t.me/InfoLoveStore\n\n"
+        "❤️ Приятных покупок в LoveStore ❤️\n\n"
+        "📱 Больше функционала в ПРИЛОЖЕНИИ 📱"
+    )
+    
+    await message.answer(welcome_text, reply_markup=get_main_keyboard())
 
-def run_flask():
-    port = int(os.environ.get("PORT", 10000))
-    app.run(host="0.0.0.0", port=port)
+# Обработчик нажатий на остальные кнопки (заглушка)
+@dp.callback_query(F.data.startswith("btn_"))
+async def callbacks_handler(callback: types.CallbackQuery):
+    await callback.answer("Раздел в разработке или пуст", show_alert=False)
 
-# Обработчик всех сообщений
-@bot.message_handler(func=lambda message: message.chat.type == 'private', content_types=['text', 'photo', 'video', 'document', 'audio', 'voice', 'animation'])
-def forward_to_channel(message):
-    try:
-        # Используем forward_message вместо copy_message
-        bot.forward_message(
-            chat_id=CHANNEL_ID, 
-            from_chat_id=message.chat.id, 
-            message_id=message.message_id
-        )
-        bot.reply_to(message, "✅ Сообщение успешно переслано в канал.")
-    except Exception as e:
-        bot.reply_to(message, f"❌ Произошла ошибка. Текст ошибки: {e}")
+async def main():
+    print("Бот запущен и готов к работе!")
+    await dp.start_polling(bot)
 
 if __name__ == "__main__":
-    flask_thread = threading.Thread(target=run_flask)
-    flask_thread.start()
-
-    print("Бот запущен...")
-    bot.infinity_polling(timeout=10, long_polling_timeout=5)
+    try:
+        asyncio.run(main())
+    except KeyboardInterrupt:
+        print("Бот остановлен")
